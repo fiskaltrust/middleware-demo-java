@@ -28,8 +28,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: 'receipt-examples'
-    Contents: '**'
+    Contents: 'receipt-examples/**'
     TargetFolder: '$(build.artifactstagingdirectory)'
 
 - task: ArchiveFiles@2
