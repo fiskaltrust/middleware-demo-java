@@ -3,6 +3,7 @@ package eu.fiskaltrust.middleware.demo.grpc;
 import bcl.Bcl;
 import eu.fiskaltrust.middleware.demo.grpc.models.ReceiptRequestContainer;
 import eu.fiskaltrust.middleware.demo.grpc.util.DateUtil;
+import eu.fiskaltrust.middleware.demo.grpc.util.ProtoUtil;
 import fiskaltrust.ifPOS.v1.IPOS;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -64,7 +65,7 @@ public class ReceiptExampleRepository {
         setField((String) obj.get("ftPosSystemId"), builder::setFtPosSystemId);
         setField((String) obj.get("cbTerminalID"), builder::setCbTerminalID);
         setField((String) obj.get("cbReceiptReference"), builder::setCbReceiptReference);
-        setField(parseDatetime((String) obj.get("cbReceiptMoment")), builder::setCbReceiptMoment);
+        setField(ProtoUtil.parseDatetime((String) obj.get("cbReceiptMoment")), builder::setCbReceiptMoment);
         setField((Long) obj.get("ftReceiptCase"), builder::setFtReceiptCase);
         setField((String) obj.get("ftReceiptCaseData"), builder::setFtReceiptCaseData);
         setField((String) obj.get("cbUser"), builder::setCbUser);
@@ -72,7 +73,7 @@ public class ReceiptExampleRepository {
         setField((String) obj.get("cbCustomer"), builder::setCbCustomer);
         setField((String) obj.get("cbSettlement"), builder::setCbSettlement);
         setField((String) obj.get("cbPreviousReceiptReference"), builder::setCbPreviousReceiptReference);
-        setField(parseDecimal(obj.get("cbReceiptAmount")), builder::setCbReceiptAmount);
+        setField(ProtoUtil.parseDecimal(obj.get("cbReceiptAmount")), builder::setCbReceiptAmount);
         JSONArray chargeItems = (JSONArray) obj.get("cbChargeItems");
 
         for (Object chargeItem : chargeItems) {
@@ -97,14 +98,14 @@ public class ReceiptExampleRepository {
         setField((Long) obj.get("Position"), builder::setPosition);
         setField((Long) obj.get("ftPayItemCase"), builder::setFtPayItemCase);
         setField((String) obj.get("ftPayItemCaseData"), builder::setFtPayItemCaseData);
-        setField(parseDecimal(obj.get("Quantity")), builder::setQuantity);
-        setField(parseDecimal(obj.get("Amount")), builder::setAmount);
+        setField(ProtoUtil.parseDecimal(obj.get("Quantity")), builder::setQuantity);
+        setField(ProtoUtil.parseDecimal(obj.get("Amount")), builder::setAmount);
         setField((String) obj.get("AccountNumber"), builder::setAccountNumber);
         setField((String) obj.get("CostCenter"), builder::setCostCenter);
         setField((String) obj.get("MoneyGroup"), builder::setMoneyGroup);
         setField((String) obj.get("MoneyNumber"), builder::setMoneyNumber);
         setField((String) obj.get("Description"), builder::setDescription);
-        setField(parseDatetime((String) obj.get("Moment")), builder::setMoment);
+        setField(ProtoUtil.parseDatetime((String) obj.get("Moment")), builder::setMoment);
 
         return builder.build();
     }
@@ -115,12 +116,12 @@ public class ReceiptExampleRepository {
         setField((Long) obj.get("Position"), builder::setPosition);
         setField((Long) obj.get("ftChargeItemCase"), builder::setFtChargeItemCase);
         setField((String) obj.get("ftChargeItemCaseData"), builder::setFtChargeItemCaseData);
-        setField(parseDecimal(obj.get("Quantity")), builder::setQuantity);
-        setField(parseDecimal(obj.get("Amount")), builder::setAmount);
-        setField(parseDecimal(obj.get("VATRate")), builder::setVATRate);
-        setField(parseDecimal(obj.get("VATAmount")), builder::setVATAmount);
-        setField(parseDecimal(obj.get("UnitQuantity")), builder::setUnitQuantity);
-        setField(parseDecimal(obj.get("UnitQuantity")), builder::setUnitPrice);
+        setField(ProtoUtil.parseDecimal(obj.get("Quantity")), builder::setQuantity);
+        setField(ProtoUtil.parseDecimal(obj.get("Amount")), builder::setAmount);
+        setField(ProtoUtil.parseDecimal(obj.get("VATRate")), builder::setVATRate);
+        setField(ProtoUtil.parseDecimal(obj.get("VATAmount")), builder::setVATAmount);
+        setField(ProtoUtil.parseDecimal(obj.get("UnitQuantity")), builder::setUnitQuantity);
+        setField(ProtoUtil.parseDecimal(obj.get("UnitQuantity")), builder::setUnitPrice);
         setField((String) obj.get("AccountNumber"), builder::setAccountNumber);
         setField((String) obj.get("CostCenter"), builder::setCostCenter);
 
@@ -129,7 +130,7 @@ public class ReceiptExampleRepository {
         setField((String) obj.get("Description"), builder::setDescription);
         setField((String) obj.get("Unit"), builder::setUnit);
         setField((String) obj.get("ProductBarcode"), builder::setProductBarcode);
-        setField(parseDatetime((String) obj.get("Moment")), builder::setMoment);
+        setField(ProtoUtil.parseDatetime((String) obj.get("Moment")), builder::setMoment);
 
         return builder.build();
     }
@@ -138,35 +139,5 @@ public class ReceiptExampleRepository {
         if (value != null) {
             set.accept(value);
         }
-    }
-
-    private Bcl.Decimal parseDecimal(Object obj) {
-        if (obj == null)
-            return null;
-
-        String str = obj.toString().replace("-", "");
-
-        // TODO: Replace this workaround with a proper serialization and also include the HI bits, instead of just cutting after 15 characters
-        str = str.length() > 15 ? str.substring(0, 15) : str;
-        String[] split = str.split(Pattern.quote("."));
-        int precision = split.length == 2 ? split[1].length() : 0;
-        int shift = str.startsWith("-") ? 0 : 1;
-
-        return Bcl.Decimal.newBuilder()
-                .setLo(Long.parseLong(str.replace(".", "")))
-                .setSignScale(precision << shift)
-                .build();
-    }
-
-    private Bcl.DateTime parseDatetime(String value) throws java.text.ParseException {
-        if (value == null)
-            return null;
-
-        Date date = DateUtil.parse(value);
-        return Bcl.DateTime.newBuilder()
-                .setKindValue(2)
-                .setScaleValue(4)
-                .setValue(date.getTime())
-                .build();
     }
 }
