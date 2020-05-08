@@ -25,3 +25,8 @@ steps:
     SourceFolder: 'target'
     Contents: '*-jar-with-dependencies.jar'
     TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
