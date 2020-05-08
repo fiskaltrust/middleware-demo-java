@@ -2,6 +2,7 @@ package eu.fiskaltrust.middleware.demo.grpc;
 
 import bcl.Bcl;
 import eu.fiskaltrust.middleware.demo.grpc.models.ReceiptRequestContainer;
+import eu.fiskaltrust.middleware.demo.grpc.util.DateUtil;
 import fiskaltrust.ifPOS.v1.IPOS;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,7 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,10 +22,9 @@ import java.util.stream.Collectors;
 public class ReceiptExampleRepository {
 
     private final String exampleDirectory;
-    private String cashboxId;
+    private final String cashboxId;
 
     public ReceiptExampleRepository(String exampleDirectory, String cashboxId) {
-
         this.exampleDirectory = exampleDirectory;
         this.cashboxId = cashboxId;
     }

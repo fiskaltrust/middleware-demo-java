@@ -5,18 +5,30 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import eu.fiskaltrust.middleware.demo.grpc.models.ReceiptRequestContainer;
-import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+
+    public static final String DEFAULT_URL = "localhost:10103";
+
     public static void main(String[] args) throws InterruptedException, IOException {
-        String url = "localhost:10103";
-        String cashboxId = "737e2889-7d32-435d-a9e7-3de40e0fa156";
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print(String.format("Middleware URL (default: %s): ", DEFAULT_URL));
+        String url = scanner.nextLine();
+        if(url == null || url.isEmpty()) {
+            url = DEFAULT_URL;
+        }
+
+        String cashboxId;
+        do {
+            System.out.print("Cashbox ID: ");
+            cashboxId = scanner.nextLine();
+        } while (cashboxId == null || cashboxId.isEmpty());
 
         PosClient client = null;
         try {
@@ -51,7 +63,7 @@ public class Main {
             System.exit(0);
         }
 
-        int input = tryParse(inputStr, -1);
+        int input = tryParse(inputStr);
 
         if (input > 0 && input <= receiptExamples.size()) {
             System.out.println("Receipt request: ");
@@ -71,8 +83,7 @@ public class Main {
             Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
             JsonElement json = JsonParser.parseString(response.trim());
             System.out.println(gson.toJson(json));
-        }
-        else {
+        } else {
             System.out.println("The given input is not supported.");
         }
 
@@ -82,11 +93,11 @@ public class Main {
         printMenu(client, receiptExamples);
     }
 
-    private static int tryParse(String value, int defaultVal) {
+    private static int tryParse(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            return defaultVal;
+            return -1;
         }
     }
 }

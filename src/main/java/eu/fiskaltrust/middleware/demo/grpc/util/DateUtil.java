@@ -1,4 +1,4 @@
-package eu.fiskaltrust.middleware.demo.grpc;
+package eu.fiskaltrust.middleware.demo.grpc.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
