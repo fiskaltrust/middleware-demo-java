@@ -26,7 +26,21 @@ steps:
     Contents: '*-jar-with-dependencies.jar'
     TargetFolder: '$(build.artifactstagingdirectory)'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'receipt-examples'
+    Contents: '**'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(build.artifactstagingdirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/middleware-demo-java-grpc.zip'
+    replaceExistingArchive: true
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
+    PathtoPublish: '$(build.artifactstagingdirectory)/middleware-demo-java-grpc.zip'
